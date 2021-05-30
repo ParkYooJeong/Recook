@@ -1,18 +1,10 @@
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from ast import literal_eval
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from . import dao
 from django.db import connection
 from .models import Recipe
 from .models import RecipeIngredients
-from django.core import serializers
-from django.http import HttpResponse, JsonResponse
-import json
 
 m = 1
 C = 1
@@ -69,8 +61,8 @@ def allergy_remove(recommend_list, small_id_list):
 
 
 def weighted_rating(x):
-    v = x['vote_count']
-    R = x['vote_average']
+    v = x['vote_count'] #영화별 투표수
+    R = x['vote_average'] #영화별 평점
     return (v / (v+m) * R) + (m / (m + v) * C)
 
 
@@ -98,20 +90,25 @@ def similar_recommend(title, userid):
 
     data = dao.get_recipe()
     # data = pd.read_csv('C:/Users/multicampus/Desktop/real_recipe.csv',encoding='cp949')
-
+    #필요한 데이터 뽑기
     data = data[['id', 'ingredients', 'vote_average',
                  'vote_count', 'title',  'keywords']]
 
+    #상위 1%에 들어야하는 최소 투표수
     global m
     m = data['vote_count'].quantile(0.9)
 
+    #전체 영화에 대한 평균
     global C
     C = data['vote_average'].mean()
 
+    # weighted rating으로 점수 계산    
     data['score'] = data.apply(weighted_rating, axis=1)
 
+    # 문자열을 숫자로 만들어주기 위한 countVectorizer 객체생성(벡터화)
     count_vector = CountVectorizer(ngram_range=(1, 3))
 
+    # 띄어쓰기가 구분자로 되어있는 재료와 해시태그를 벡터화 시킴
     c_vector_ingredients = count_vector.fit_transform(data['ingredients'])
     c_vector_keywords = count_vector.fit_transform(data['keywords'])
 
@@ -121,9 +118,11 @@ def similar_recommend(title, userid):
     keyword_c_sim = cosine_similarity(
         c_vector_keywords, c_vector_keywords).argsort()[:, ::-1]
 
+    # 코사인 유사도 상위 10개 뽑음
     result = get_recommend_recipe_list(
         data, gerne_c_sim, keyword_c_sim, recipe_title=title)
 
+    # 유저의 알레르기를 가진 레시피는 걸러냄
     small_id_list = allergy_list(userid)
 
     real_result = allergy_remove(result, small_id_list)
