@@ -74,7 +74,6 @@ def weighted_rating(x):
     return (v / (v+m) * R) + (m / (m + v) * C)
 
 
-
 def get_recommend_recipe_list(df, gerne_c_sim, keyword_c_sim, recipe_title, top=30):
     # 특정 레시피와 비슷한 레시피를 추천해야 하기 때문에 '특정 레시피' 정보를 뽑아낸다.
     target_recipe_index = df[df['title'] == recipe_title].index.values
@@ -98,6 +97,7 @@ def get_recommend_recipe_list(df, gerne_c_sim, keyword_c_sim, recipe_title, top=
 def similar_recommend(title, userid):
 
     data = dao.get_recipe()
+    # data = pd.read_csv('C:/Users/multicampus/Desktop/real_recipe.csv',encoding='cp949')
 
     data = data[['id', 'ingredients', 'vote_average',
                  'vote_count', 'title',  'keywords']]
@@ -127,5 +127,7 @@ def similar_recommend(title, userid):
     small_id_list = allergy_list(userid)
 
     real_result = allergy_remove(result, small_id_list)
+
+    print(data[data['title'] == title])
 
     return real_result

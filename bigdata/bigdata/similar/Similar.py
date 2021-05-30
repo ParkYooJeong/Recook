@@ -46,8 +46,6 @@ def allergy_remove(recommend_list, small_id_list):
             for b in small_id_list:
                 # 레시피 재료와 알레르기 재료가 같다면
                 if(b == a.small_id):
-                    print("알레르기")
-                    print(b)
                     flag = False
                     break
             if(flag == False):
@@ -112,7 +110,6 @@ def similar_recommend(title, userid):
 
     data['score'] = data.apply(weighted_rating, axis=1)
 
-    # data.to_csv('C:/Users/multicampus/Desktop/real_recipe_new.csv', index = False,encoding='utf-8-sig')
     count_vector = CountVectorizer(ngram_range=(1, 3))
 
     c_vector_ingredients = count_vector.fit_transform(data['ingredients'])
@@ -125,15 +122,12 @@ def similar_recommend(title, userid):
         c_vector_keywords, c_vector_keywords).argsort()[:, ::-1]
 
     result = get_recommend_recipe_list(
-        data, gerne_c_sim, keyword_c_sim, movie_title=title)
+        data, gerne_c_sim, keyword_c_sim, recipe_title=title)
 
     small_id_list = allergy_list(userid)
-    # print('알레르기 리스트')
-    # print(small_id_list)
 
     real_result = allergy_remove(result, small_id_list)
 
     print(data[data['title'] == title])
-    # print(real_result)
 
     return real_result
