@@ -3,18 +3,18 @@ from django.db import models
 from django.db import connection
 from pandas import Series, DataFrame
 
-def review_test():
+def get_review():
     review = Review.objects.all()
 
     for hi in review:
         print(hi.review_context)
 
-def recipe_test():
+def get_recipe():
     total_recipe = {}
     total_recipe['id'] = []
     total_recipe['title'] = []
     total_recipe['keywords'] = []
-    total_recipe['genres'] = []
+    total_recipe['ingredients'] = []
     total_recipe['vote_average'] = []
     total_recipe['vote_count'] = []
 
@@ -29,7 +29,7 @@ def recipe_test():
         total_recipe['id'].append(c[0])
         total_recipe['title'].append(c[1])
         total_recipe['keywords'].append(c[2])
-        total_recipe['genres'].append(c[3])
+        total_recipe['ingredients'].append(c[3])
 
     cursor = connection.cursor()
     cursor.execute('select avg(f.review_rating) as vote_average, count(f.review_id) ' +

@@ -97,9 +97,9 @@ def get_recommend_recipe_list(df, gerne_c_sim, keyword_c_sim, recipe_title, top=
 
 def similar_recommend(title, userid):
 
-    data = dao.recipe_test()
+    data = dao.get_recipe()
 
-    data = data[['id', 'genres', 'vote_average',
+    data = data[['id', 'ingredients', 'vote_average',
                  'vote_count', 'title',  'keywords']]
 
     global m
@@ -112,12 +112,12 @@ def similar_recommend(title, userid):
 
     count_vector = CountVectorizer(ngram_range=(1, 3))
 
-    c_vector_genres = count_vector.fit_transform(data['genres'])
+    c_vector_ingredients = count_vector.fit_transform(data['ingredients'])
     c_vector_keywords = count_vector.fit_transform(data['keywords'])
 
     # 코사인 유사도를 구한 벡터를 미리 저장
     gerne_c_sim = cosine_similarity(
-        c_vector_genres, c_vector_genres).argsort()[:, ::-1]
+        c_vector_ingredients, c_vector_ingredients).argsort()[:, ::-1]
     keyword_c_sim = cosine_similarity(
         c_vector_keywords, c_vector_keywords).argsort()[:, ::-1]
 

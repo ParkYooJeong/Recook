@@ -29,7 +29,7 @@ def recipe_list():
     recipe_list = {}
     recipe_list['recipeId'] = []
     recipe_list['title'] = []
-    recipe_list['genres'] = []
+    recipe_list['ingredients'] = []
 
     cursor = connection.cursor()
     cursor.execute('SELECT a.recipe_sub_id,a.recipe_title,group_concat(distinct c.hashtag_name ORDER BY c.hashtag_id separator "|") as hashtag_name FROM recipe a, recipe_hashtag b,hashtag c where a.recipe_id=b.recipe_id and b.hashtag_id=c.hashtag_id group by recipe_title')
@@ -37,7 +37,7 @@ def recipe_list():
     for c in cursor:
         recipe_list['recipeId'].append(c[0])
         recipe_list['title'].append(c[1])
-        recipe_list['genres'].append(c[2])
+        recipe_list['ingredients'].append(c[2])
 
     return DataFrame(recipe_list)
 
