@@ -74,8 +74,9 @@ def weighted_rating(x):
     return (v / (v+m) * R) + (m / (m + v) * C)
 
 
+
 def get_recommend_recipe_list(df, gerne_c_sim, keyword_c_sim, recipe_title, top=30):
-    # 특정 영화와 비슷한 영화를 추천해야 하기 때문에 '특정 영화' 정보를 뽑아낸다.
+    # 특정 레시피와 비슷한 레시피를 추천해야 하기 때문에 '특정 레시피' 정보를 뽑아낸다.
     target_recipe_index = df[df['title'] == recipe_title].index.values
 
     # 코사인 유사도 중 비슷한 코사인 유사도를 가진 정보를 뽑아낸다.

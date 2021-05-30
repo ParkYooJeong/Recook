@@ -76,17 +76,17 @@ def weighted_rating(x):
     return (v / (v+m) * R) + (m / (m + v) * C)
 
 
-def get_recommend_movie_list(df, gerne_c_sim, keyword_c_sim, movie_title, top=30):
-    # 특정 영화와 비슷한 영화를 추천해야 하기 때문에 '특정 영화' 정보를 뽑아낸다.
-    target_movie_index = df[df['title'] == movie_title].index.values
+def get_recommend_recipe_list(df, gerne_c_sim, keyword_c_sim, recipe_title, top=30):
+    # 특정 레시피와 비슷한 레시피를 추천해야 하기 때문에 '특정 레시피' 정보를 뽑아낸다.
+    target_recipe_index = df[df['title'] == recipe_title].index.values
 
     # 코사인 유사도 중 비슷한 코사인 유사도를 가진 정보를 뽑아낸다.
-    sim_index = gerne_c_sim[target_movie_index, :top].reshape(-1)
-    sim_index_keyword = keyword_c_sim[target_movie_index, :top].reshape(-1)
+    sim_index = gerne_c_sim[target_recipe_index, :top].reshape(-1)
+    sim_index_keyword = keyword_c_sim[target_recipe_index, :top].reshape(-1)
     # 본인을 제외
-    sim_index = sim_index[sim_index != target_movie_index]
+    sim_index = sim_index[sim_index != target_recipe_index]
     sim_index_keyword = sim_index_keyword[sim_index_keyword !=
-                                          target_movie_index]
+                                          target_recipe_index]
     # data frame으로 만들고 vote_count으로 정렬한 뒤 return
     result = df.iloc[sim_index].sort_values('score', ascending=False)[:5]
     result2 = df.iloc[sim_index_keyword].sort_values(
@@ -124,7 +124,7 @@ def similar_recommend(title, userid):
     keyword_c_sim = cosine_similarity(
         c_vector_keywords, c_vector_keywords).argsort()[:, ::-1]
 
-    result = get_recommend_movie_list(
+    result = get_recommend_recipe_list(
         data, gerne_c_sim, keyword_c_sim, movie_title=title)
 
     small_id_list = allergy_list(userid)
